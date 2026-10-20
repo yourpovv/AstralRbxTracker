@@ -26,19 +26,19 @@ func TestNewEmbed(t *testing.T) {
 
 		got := newEmbed(updateTo(current))
 
-		if got.Color != updateColor || got.Fields[1].Value != noPublicChanges || len(got.Fields) != 4 {
-			t.Fatalf("want update embed with timestamps and inferred note, got %+v", got)
+		if got.Color != updateColor || len(got.Fields) != 3 || got.Fields[2].Value != noPublicChanges {
+			t.Fatalf("want update embed with previous version and inferred note, got %+v", got)
 		}
 	})
 
-	t.Run("reports a details change without timestamps", func(t *testing.T) {
+	t.Run("reports a details change without the previous version", func(t *testing.T) {
 		current := before
 		current.Description = "New"
 
 		got := newEmbed(updateTo(current))
 
 		if got.Color != detailsColor || len(got.Fields) != 2 {
-			t.Fatalf("want details embed without timestamps, got %+v", got)
+			t.Fatalf("want details embed without previous version, got %+v", got)
 		}
 	})
 
@@ -50,6 +50,20 @@ func TestNewEmbed(t *testing.T) {
 
 		if got.Thumbnail == nil || got.Thumbnail.URL != "https://icon" {
 			t.Fatalf("want icon thumbnail, got %+v", got.Thumbnail)
+		}
+	})
+}
+
+func TestDiscordTime(t *testing.T) {
+	t.Run("turns a Roblox timestamp into a relative Discord time", func(t *testing.T) {
+		if got := discordTime("2026-10-20T01:05:48.945Z"); got != "<t:1792458348:R>" {
+			t.Fatalf("got %q", got)
+		}
+	})
+
+	t.Run("keeps text that isn't a timestamp", func(t *testing.T) {
+		if got := discordTime("test alert"); got != "`test alert`" {
+			t.Fatalf("got %q", got)
 		}
 	})
 }
