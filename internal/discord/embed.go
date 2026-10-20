@@ -70,7 +70,7 @@ func headline(update tracker.Update) embed {
 	if update.Published() {
 		return embed{
 			Author:      author{Name: "🎮 New version live"},
-			Description: "Published " + discordTime(update.Current.Updated),
+			Description: "A new version was published on Roblox.",
 			Color:       updateColor,
 		}
 	}
@@ -82,7 +82,10 @@ func headline(update tracker.Update) embed {
 }
 
 func fields(update tracker.Update) []field {
-	result := []field{{Name: "Players", Value: withThousands(update.Current.Playing), Inline: true}}
+	result := []field{
+		{Name: "Players", Value: withThousands(update.Current.Playing), Inline: true},
+		{Name: "Updated", Value: discordTime(update.Current.Updated), Inline: true},
+	}
 	if update.Published() {
 		result = append(result, field{Name: "Previous version", Value: discordTime(update.Previous.Updated), Inline: true})
 	}

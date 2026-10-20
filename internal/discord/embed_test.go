@@ -26,7 +26,7 @@ func TestNewEmbed(t *testing.T) {
 
 		got := newEmbed(updateTo(current))
 
-		if got.Color != updateColor || len(got.Fields) != 3 || got.Fields[2].Value != noPublicChanges {
+		if got.Color != updateColor || len(got.Fields) != 4 || got.Fields[3].Value != noPublicChanges {
 			t.Fatalf("want update embed with previous version and inferred note, got %+v", got)
 		}
 	})
@@ -37,7 +37,7 @@ func TestNewEmbed(t *testing.T) {
 
 		got := newEmbed(updateTo(current))
 
-		if got.Color != detailsColor || len(got.Fields) != 2 {
+		if got.Color != detailsColor || len(got.Fields) != 3 || got.Fields[1].Name != "Updated" {
 			t.Fatalf("want details embed without previous version, got %+v", got)
 		}
 	})
