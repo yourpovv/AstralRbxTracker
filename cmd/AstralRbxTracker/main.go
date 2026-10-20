@@ -95,16 +95,23 @@ func loadApp() (app, error) {
 	}, nil
 }
 
-func checkOnce(ctx context.Context, app app) error {
+func requireWebhook(app app) error {
 	if app.settings.DiscordWebhookURL == "" {
 		return errNoWebhook
+	}
+	return nil
+}
+
+func checkOnce(ctx context.Context, app app) error {
+	if err := requireWebhook(app); err != nil {
+		return err
 	}
 	return app.tracker.Check(ctx)
 }
 
 func trackForever(ctx context.Context, app app) error {
-	if app.settings.DiscordWebhookURL == "" {
-		return errNoWebhook
+	if err := requireWebhook(app); err != nil {
+		return err
 	}
 	fmt.Printf("Checking every %s. Ctrl+C to stop.\n\n", app.settings.PollInterval)
 	for {

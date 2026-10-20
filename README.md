@@ -39,7 +39,10 @@ AstralRbxTracker list
 AstralRbxTracker disable 13822889
 AstralRbxTracker enable 13822889
 AstralRbxTracker remove 13822889
+AstralRbxTracker test 13822889
 ```
+
+`test` posts a sample alert with the game's live info to your webhook. It doesn't touch saved state, and the game doesn't need to be tracked
 
 Swap `AstralRbxTracker` for your file from the table above, like `./AstralRbxTracker-linux add 13822889`
 

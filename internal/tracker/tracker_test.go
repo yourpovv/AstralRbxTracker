@@ -111,6 +111,22 @@ func TestTrackerCheck(t *testing.T) {
 		}
 	})
 
+	t.Run("sends a test alert with live data and leaves state alone", func(t *testing.T) {
+		state := &fakeState{saved: map[int64]Snapshot{lumberUniverse: lumberTycoon}}
+		notifier := &fakeNotifier{}
+
+		if err := trackerWith(state, published(), notifier).SendTest(context.Background(), lumberGame); err != nil {
+			t.Fatal(err)
+		}
+
+		if len(notifier.sent) != 1 || !notifier.sent[0].Published() || notifier.sent[0].Current != published() {
+			t.Fatalf("want 1 published alert with live data, got %+v", notifier.sent)
+		}
+		if state.saved[lumberUniverse] != lumberTycoon {
+			t.Fatalf("want state untouched, got %+v", state.saved)
+		}
+	})
+
 	t.Run("skips disabled games", func(t *testing.T) {
 		state, notifier := &fakeState{}, &fakeNotifier{}
 		tracker := trackerWith(state, lumberTycoon, notifier)

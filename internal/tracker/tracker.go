@@ -2,9 +2,16 @@ package tracker
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"log/slog"
 	"time"
 )
+
+// stands in for the old timestamp so a test alert is easy to spot
+const testTimestamp ="test alert, not a real update"
+
+var ErrNoData = errors.New("Roblox sent no data")
 
 type GameList interface {
 	Games() ([]Game, error)
@@ -80,6 +87,22 @@ func (t *Tracker) checkGame(
 
 	states[game.UniverseID] = current
 	return t.State.Save(states)
+}
+
+// a sample alert with live data that leaves saved state alone
+func (t *Tracker) SendTest(ctx context.Context, game Game) error {
+	snapshots, err := t.Source.Snapshots(ctx, []int64{game.UniverseID})
+	if err != nil {
+		return err
+	}
+	current, found := snapshots[game.UniverseID]
+	if !found {
+		return fmt.Errorf("place %d: %w", game.PlaceID, ErrNoData)
+	}
+
+	previous := current
+	previous.Updated = testTimestamp
+	return t.Notifier.Notify(ctx, t.updateFor(game, previous, current))
 }
 
 func (t *Tracker) updateFor(game Game, previous, current Snapshot) Update {

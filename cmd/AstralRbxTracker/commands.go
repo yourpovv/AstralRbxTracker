@@ -10,6 +10,7 @@ import (
 	"strconv"
 
 	"github.com/yourpovv/AstralRbxTracker/internal/manage"
+	"github.com/yourpovv/AstralRbxTracker/internal/tracker"
 )
 
 var commands = map[string]command{
@@ -19,6 +20,7 @@ var commands = map[string]command{
 	"disable": {"disable <place_id>", "pause checking a game", placeCommand("disabled", manage.Manager.Disable)},
 	"list":    {"list", "show tracked games", runList},
 	"once":    {"once", "check every game one time, for GitHub Actions or cron", runOnce},
+	"test":    {"test <place_id>", "send a sample alert with the game's live info", runTest},
 }
 
 type command struct {
@@ -69,6 +71,27 @@ func runList(_ context.Context, app app, _ []string) error {
 
 func runOnce(ctx context.Context, app app, _ []string) error {
 	return checkOnce(ctx, app)
+}
+
+func runTest(ctx context.Context, app app, args []string) error {
+	if err := requireWebhook(app); err != nil {
+		return err
+	}
+	placeID, err := parsePlaceID(args)
+	if err != nil {
+		return err
+	}
+	universeID, err := app.manager.Places.UniverseID(ctx, placeID)
+	if err != nil {
+		return err
+	}
+
+	game := tracker.Game{PlaceID: placeID, UniverseID: universeID}
+	if err := app.tracker.SendTest(ctx, game); err != nil {
+		return err
+	}
+	fmt.Printf("Sent a test alert for place %d.\n", placeID)
+	return nil
 }
 
 func placeCommand(
