@@ -4,6 +4,11 @@
       "place_id": 13822889,
       "universe_id": 2471084,
       "enabled": true
-    } 
+    },
+    {
+      "place_id": 118614517739521,
+      "universe_id": 9277195104,
+      "enabled": true
+    }
   ]
 }
