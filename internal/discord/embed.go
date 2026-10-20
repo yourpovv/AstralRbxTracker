@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	updateColor  = 0x7C3AED
-	detailsColor = 0x14B8A6
+	updateColor  = 0x4A90E2 // astral-blue from the AstralHub site
+	detailsColor = 0x8FC2FF // astral-blue-soft
 	footerText   = "Astral Tracker · Place %d"
 	gameURL      = "https://www.roblox.com/games/%d"
 	fieldLimit   = 1024
@@ -69,7 +69,7 @@ func newEmbed(update tracker.Update) embed {
 func headline(update tracker.Update) embed {
 	if update.Published() {
 		return embed{
-			Author:      author{Name: "🛰️ New version live"},
+			Author:      author{Name: "🎮 New version live"},
 			Description: "Published " + discordTime(update.Current.Updated),
 			Color:       updateColor,
 		}
